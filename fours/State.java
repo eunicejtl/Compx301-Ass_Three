@@ -8,8 +8,6 @@ class State {
 	private String[] _child = new String[] { "+4", "-4", "*4", "/4", "**4", "4", ".4", "()" };
 	private ArrayList<State> _children = new ArrayList<State>();
 
-	private State _next;
-
 	/* CONSTRUCTOR */
 
 	//GRAPH STATE CONSTRUCTOR
@@ -23,25 +21,16 @@ class State {
 		_move = move;
 	}
 
+	/* GETTERS AND SETTERS */
 
 	public String getState() {
 
-		return state;
+		return _state;
 	}
 
-	public void setState(String state) {
+	public int getMove() {
 
-		this.state = state;
-	}
-
-	public Node getNext() {
-
-		return next;
-	}
-
-	public void setNext(Node next) {
-
-		this.next = next;
+		return _move;
 	}
 
 	public void setChildren(String state) {
@@ -54,5 +43,16 @@ class State {
 			children.add(childState);
 			temp++;
 		}
+	}
+
+	public ArrayList<State> getChildren() {
+
+		return _children;
+	}
+
+	public State getChild(State parent, int move) {
+
+		State child = parent.getChildren().get(move);
+		return child;
 	}
 }
