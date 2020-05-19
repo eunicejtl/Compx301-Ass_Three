@@ -1,15 +1,26 @@
 import java.util.*;
 import java.io.*;
 
-class Graph {
+class Frontier {
 
-	private State initial;
+	private State rootMove;
 
-	public Graph() {
+	public Frontier() {
 
-		initial = new Node("4");
+		root = new Node("4");
 	}
 
+	//ADD STATES AT THE END OF THE TREE
+	public void Enqueue() {
+
+		
+
+
+	}
+
+	public void Dequeue() {
+
+	}
 	
 
 

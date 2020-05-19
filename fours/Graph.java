@@ -9,8 +9,4 @@ class Graph {
 
 		initial = new Node("4");
 	}
-
-	
-
-
 }
