@@ -7,11 +7,11 @@ class Frontier {
 
 	public Frontier() {
 
-		initial.setState("4");
+		initial = new Node("4");
 	}
 
 	public void enque(String state) {
 
-		
+
 	}
 }
