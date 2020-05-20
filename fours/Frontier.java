@@ -24,7 +24,6 @@ class Frontier {
 
 			curr = curr.getNext();
 		}
-		
 		curr.setNext(state);
 	}
 
@@ -33,18 +32,6 @@ class Frontier {
 
 		root = root.getNext();
 	}
-
-	/*public State findState(String expression) {
-
-    	State curr = root;
-
-    	while (!(curr.getExpression().compareTo(expression))) {
-    		
-    		curr = curr.getNext();
-    	}
-
-    	return curr;
-    }*/
 
 	public State getRoot() {
 

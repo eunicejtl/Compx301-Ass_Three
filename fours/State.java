@@ -12,8 +12,8 @@ class State {
 	
 	//VARIABLES FOR TRIE (MOVE)
 	private int _move;
-	/*private String[] _child = new String[] { "+4", "-4", "*4", "/4", "^4", "4", ".4", "()" };
-	private ArrayList<State> _children = new ArrayList<State>();*/
+	private String[] _child = new String[] { "+4", "-4", "*4", "/4", "^4", "4", ".4", "()" };
+	private ArrayList<State> _children = new ArrayList<State>();
 
 	//VARIABLES FOR LINKEDLIST (FRONTIER)
 	private int _stateNum;

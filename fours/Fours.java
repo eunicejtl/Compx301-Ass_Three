@@ -23,10 +23,10 @@ class Fours {
 			State child;
 			State root;
 
+			double total;
+
 			//GET INPUT
 			double input = eval(args[0]);
-			System.out.println("input: " + input);
-			System.out.println("eval: " + input);
 
 			//Set up initial state
 			Frontier queue = new Frontier();
@@ -36,28 +36,20 @@ class Fours {
 
 			while (eval(expression) != input) {
 
-				//System.out.println("Debugging: exp = " + expression);
-
 				//ADDING THE CHILDREN AT THE END OF THE LIST
-				for (int i = 0; i < 8 ; i++) {
+				for (int i = 0; i < 8 ; i++ ) {
 					
-					//System.out.println("Debugging: For loop enter ");
-
 					child = move(i, root);
 					queue.enqueue(child);
-
-					//System.out.println("Debugging: i = " + i + "root = " + root.getExpression() + "child = " + child.getExpression());
 				}
 
+				//remove head of the queue
 				queue.dequeue();
 				root = queue.getRoot();
 				expression = root.getExpression();
-
-				//System.out.println("Debugging: root = " + root.getExpression() + "expression = " + expression);
 			}
 
-			System.out.println("Found: " + expression);
-
+			System.out.println("Goal: " + expression);
 		}
 		catch(Exception eFours) {
 
@@ -73,13 +65,24 @@ class Fours {
 
 		if (!(index < 0 && index > 8)) {
 			
-			if (index == 0) 	 { child.setExpression(stateExp + "+4"); }
-			else if (index == 1) { child.setExpression(stateExp + "-4"); }
-			else if (index == 2) { child.setExpression(stateExp + "*4"); }
-			else if (index == 3) { child.setExpression(stateExp + "/4"); }
-			else if (index == 4) { child.setExpression(stateExp + "^4"); }
-			else if (index == 5) { child.setExpression(stateExp + "4"); }
-			else if (index == 6) { child.setExpression(stateExp + ".4"); }
+			if (index == 0) 	 { child.setExpression(stateExp+"+4"); }
+			else if (index == 1) { child.setExpression(stateExp+"-4"); }
+			else if (index == 2) { child.setExpression(stateExp+"*4"); }
+			else if (index == 3) { child.setExpression(stateExp+"/4"); }
+			else if (index == 4) { child.setExpression(stateExp+"^4"); }
+			else if (index == 5) { 
+
+				//Check if our expression has parentheses at the end
+				if(stateExp.substring(stateExp.length() - 1) == ")") {
+					//Multiple the expression inside the brackets with 4
+					child.setExpression(stateExp+"*4"); 
+				}
+				else {
+
+					child.setExpression(stateExp+"4");
+				}
+			}
+			else if (index == 6) { child.setExpression(stateExp+"+.4"); }
 			else if (index == 7) { child.setExpression("(" + stateExp + ")"); }
 		}
 
