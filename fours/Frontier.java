@@ -1,3 +1,7 @@
+/* Name: Meecah Cahayon + Eunice Llobet
+ * Student ID: 1259825 + 1330233
+ */
+
 import java.util.*;
 import java.io.*;
 
@@ -23,13 +27,10 @@ class Frontier {
 		curr = newState;
 	}
 
+	//REMOVE FROM THE TOP THE LIST
 	public void Dequeue() {
 
-		//Check if end of queue
-		if(root.getNext() != null) {
-
-			root = root.getNext();
-		}
+		root = root.getNext();
 	}
 
 	public State getRoot() {

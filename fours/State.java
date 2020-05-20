@@ -1,14 +1,18 @@
+/* Name: Meecah Cahayon + Eunice Llobet
+ * Student ID: 1259825 + 1330233
+ */
+
 import java.util.*;
 import java.io.*;
 
 class State {
 
 	//VARIABLES FOR BOTH
-	private String _state;
+	private String _expression;
 	
 	//VARIABLES FOR TRIE (MOVE)
 	private int _move;
-	private String[] _child = new String[] { "+4", "-4", "*4", "/4", "**4", "4", ".4", "()" };
+	private String[] _child = new String[] { "+4", "-4", "*4", "/4", "^4", "4", ".4", "()" };
 	private ArrayList<State> _children = new ArrayList<State>();
 
 	//VARIABLES FOR LINKEDLIST (FRONTIER)
@@ -18,13 +22,13 @@ class State {
 	/* CONSTRUCTOR */
 
 	//STATE CONSTRUCTOR
-	public State(String state) {
+	public State(String expression) {
 
-		_state = state;
+		_expression = expression;
 	}
 	public State(String state, int move) {
 
-		_state = state;
+		_expression = state;
 		_move = move;
 	}
 
@@ -41,9 +45,14 @@ class State {
 
 	/* GETTERS AND SETTERS */
 
-	public String getState() {
+	public void setExpression(String expression) {
 
-		return _state;
+		_expression = expression;
+	}
+
+	public String getExpression() {
+
+		return _expression;
 	}
 
 	public int getMove() {
