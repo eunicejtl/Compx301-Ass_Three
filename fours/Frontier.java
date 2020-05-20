@@ -16,22 +16,35 @@ class Frontier {
 	}
 
 	//ADD STATES AT THE END OF THE QUEUE
-	public void Enqueue(State newState) {
+	public void enqueue(State state) {
 
 		State curr = root;
 
-		while(curr != null) {
+		while(curr.getNext() != null) {
 
 			curr = curr.getNext();
 		}
-		curr = newState;
+		
+		curr.setNext(state);
 	}
 
 	//REMOVE FROM THE TOP THE LIST
-	public void Dequeue() {
+	public void dequeue() {
 
 		root = root.getNext();
 	}
+
+	/*public State findState(String expression) {
+
+    	State curr = root;
+
+    	while (!(curr.getExpression().compareTo(expression))) {
+    		
+    		curr = curr.getNext();
+    	}
+
+    	return curr;
+    }*/
 
 	public State getRoot() {
 

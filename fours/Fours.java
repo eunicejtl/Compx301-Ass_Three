@@ -19,49 +19,44 @@ class Fours {
 			}
 
 			//DECLARE VARIABLES
+			String expression;
 			State child;
-			State curr;
+			State root;
 
 			//GET INPUT
-			String input = args[0];
+			double input = eval(args[0]);
 			System.out.println("input: " + input);
-			System.out.println("eval: " + eval(input));
+			System.out.println("eval: " + input);
 
 			//Set up initial state
-			//Frontier moves = new Frontier();
 			Frontier queue = new Frontier();
 
-			/*//IF INPUT IS INITIAL STAE (=4)
-			if(eval(moves.getRoot().getExpression()) == input) {
+			root = queue.getRoot();
+			expression = root.getExpression();
 
-				//EXPRESSION FOUND (GOAL FOUND)
-				System.out.println(moves.getRoot().getExpression());
-				return;
-			}*/
+			while (eval(expression) != input) {
 
-			while (eval(queue.getRoot().getExpression()) != input) {
-				
-				/*
-					WHILE input is not head of queue
-						ADD children at the end of the list
-						POP head
-					END WHILE
-
-					PRINT EXPRESSION
-				*/
-
-				/*//SETTING MOVES CHILDREN
-				String rootExp = moves.getRoot().getExpression()
-				moves.getRoot().setChildren(rootExp);*/
+				//System.out.println("Debugging: exp = " + expression);
 
 				//ADDING THE CHILDREN AT THE END OF THE LIST
-				for (int i = 0; i > 8 ; i++ ) {
+				for (int i = 0; i < 8 ; i++) {
 					
-					child = move(i, curr.get)
+					//System.out.println("Debugging: For loop enter ");
+
+					child = move(i, root);
+					queue.enqueue(child);
+
+					//System.out.println("Debugging: i = " + i + "root = " + root.getExpression() + "child = " + child.getExpression());
 				}
 
+				queue.dequeue();
+				root = queue.getRoot();
+				expression = root.getExpression();
 
+				//System.out.println("Debugging: root = " + root.getExpression() + "expression = " + expression);
 			}
+
+			System.out.println("Found: " + expression);
 
 		}
 		catch(Exception eFours) {
@@ -78,14 +73,14 @@ class Fours {
 
 		if (!(index < 0 && index > 8)) {
 			
-			if (index == 0) 	 { child.setExpression(stateExp+"+4"); }
-			else if (index == 1) { child.setExpression(stateExp+"-4"); }
-			else if (index == 2) { child.setExpression(stateExp+"*4"); }
-			else if (index == 3) { child.setExpression(stateExp+"/4"); }
-			else if (index == 4) { child.setExpression(stateExp+"^4"); }
-			else if (index == 5) { child.setExpression(stateExp+"4"); }
-			else if (index == 6) { child.setExpression(stateExp+".4"); }
-			else if (index == 7) { "("+child.setExpression(stateExp+")"); }
+			if (index == 0) 	 { child.setExpression(stateExp + "+4"); }
+			else if (index == 1) { child.setExpression(stateExp + "-4"); }
+			else if (index == 2) { child.setExpression(stateExp + "*4"); }
+			else if (index == 3) { child.setExpression(stateExp + "/4"); }
+			else if (index == 4) { child.setExpression(stateExp + "^4"); }
+			else if (index == 5) { child.setExpression(stateExp + "4"); }
+			else if (index == 6) { child.setExpression(stateExp + ".4"); }
+			else if (index == 7) { child.setExpression("(" + stateExp + ")"); }
 		}
 
 		return child;

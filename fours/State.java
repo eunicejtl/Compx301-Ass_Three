@@ -12,8 +12,8 @@ class State {
 	
 	//VARIABLES FOR TRIE (MOVE)
 	private int _move;
-	private String[] _child = new String[] { "+4", "-4", "*4", "/4", "^4", "4", ".4", "()" };
-	private ArrayList<State> _children = new ArrayList<State>();
+	/*private String[] _child = new String[] { "+4", "-4", "*4", "/4", "^4", "4", ".4", "()" };
+	private ArrayList<State> _children = new ArrayList<State>();*/
 
 	//VARIABLES FOR LINKEDLIST (FRONTIER)
 	private int _stateNum;
@@ -70,7 +70,7 @@ class State {
         return _next;
     }
 
-	public void setChildren(String state) {
+	/*public void setChildren(String state) {
 
 		int temp = 0;
 
@@ -91,5 +91,5 @@ class State {
 
 		State child = parent.getChildren().get(move);
 		return child;
-	}
+	}*/
 }
