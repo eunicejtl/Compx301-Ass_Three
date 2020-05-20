@@ -3,25 +3,37 @@ import java.io.*;
 
 class Frontier {
 
-	private State rootMove;
+	private State root;
 
 	public Frontier() {
 
-		root = new Node("4");
+		//Set the initial frontier
+		root = new State("4");
 	}
 
-	//ADD STATES AT THE END OF THE TREE
-	public void Enqueue() {
+	//ADD STATES AT THE END OF THE QUEUE
+	public void Enqueue(State newState) {
 
-		
+		State curr = root;
 
+		while(curr != null) {
 
+			curr = curr.getNext();
+		}
+		curr = newState;
 	}
 
 	public void Dequeue() {
 
+		//Check if end of queue
+		if(root.getNext() != null) {
+
+			root = root.getNext();
+		}
 	}
-	
 
+	public State getRoot() {
 
+		return root;
+	}
 }

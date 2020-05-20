@@ -65,10 +65,10 @@ class State {
 
 		int temp = 0;
 
-		foreach(String s: child) {
+		for(String s: _child) {
 
 			State childState = new State(state+s, temp);
-			children.add(childState);
+			_children.add(childState);
 			temp++;
 		}
 	}
