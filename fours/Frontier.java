@@ -24,6 +24,7 @@ class Frontier {
 
 			curr = curr.getNext();
 		}
+		
 		curr.setNext(state);
 	}
 
