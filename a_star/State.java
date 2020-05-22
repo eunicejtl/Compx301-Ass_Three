@@ -10,10 +10,10 @@ class State {
 	private double _cost;	
 	private double _heuristicValue;
 	private double _fValue;
+	private State _previousPath;
 	
 	private State _next;
 	
-
 	/* CONSTRUCTOR */
 
 	//MAINLY USED FOR GOAL
@@ -65,14 +65,24 @@ class State {
 		return _heuristicValue;
 	}
 
-	public void setfValue(double fValue) {
+	// public void setfValue(double fValue) {
 
-		_fValue = fValue;
-	}
+	// 	_fValue = fValue;
+	// }
 
 	public double getFValue() {
 
 		return _fValue;
+	}
+
+	public void setPP(State previousPath) {
+
+		_previousPath = previousPath;
+	}
+
+	public State getPP() {
+
+		return _previousPath;
 	}
 
 	public void setNext(State next) {
@@ -83,6 +93,19 @@ class State {
 	public State getNext() {
 
 		return _next;
+	}
+
+	/* METHODS */
+
+	//CALCULATE THE F_VALUE OF THE STATE
+	public double setfValue(double cost, double heuristic) {
+
+		_heuristicValue = heuristicValue;
+		_cost = cost;
+		
+		_fValue = cost + heuristic;
+
+		return f_value;
 	}
 
 }

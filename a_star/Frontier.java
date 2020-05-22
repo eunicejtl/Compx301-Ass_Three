@@ -14,25 +14,6 @@ class Frontier {
 
 	/* METHODS */
 
-	//CALCULATE THE HEURISTIC VALUE OF A STATE USING EUCLIDEAN DISTANCE
-	//sqrt((current.x - goal.x)^2 + (current.y - goal.y)^2)
-	//public double calcHeuristic(int currXCoord, int currYCoord, int goalXCoord, int goalYCoord) {
-	public double calcHeuristic(State currState, State goalState) {
-		
-		//double distance = Math.sqrt(Math.pow(currXCoord - goalXCoord, 2) + Math.pow(currYCoord - goalYCoord, 2));
-		double distance = Math.sqrt(Math.pow(currState.getXCoord() - goalState.getXCoord(), 2) + Math.pow(currState.getYCoord() - goalState.getYCoord(), 2));
-			
-		return distance;
-	}
-
-	//CALCULATE THE F_VALUE OF THE STATE
-	public double calcF(double cost, double heuristic) {
-
-		double f_value = cost + heuristic;
-
-		return f_value;
-	}
-
 	//FIND THE LOWEST F_VALUED STATE
 	public State getLowestF() {
 

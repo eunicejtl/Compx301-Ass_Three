@@ -69,7 +69,9 @@ class AStar {
 
 					cost = 0;
 					startState = new State(sXcoord, sYCoord);
-					startState.setCost(cost);
+					//startState.setCost(cost);
+					//startState.setHeuristic(calcHeuristic(startState, goalState));
+					startState.setfValue(cost, calcHeuristic(startState, goalState));
 				}
 
 				totalNumLines++;
@@ -87,9 +89,6 @@ class AStar {
 
 			//WHILE PATH(SMALLEST FVALUE) IS NOT GOAL
 
-
-
-
 			possiblePaths = move(startState);
 
 			for (int i=0; i < possiblePaths.size() ; i++) {
@@ -100,9 +99,6 @@ class AStar {
 
 				frontier.add(possiblePaths.get(i));
 			}
-
-
-
 
 		}
 		catch(Exception eAStar) {
@@ -142,8 +138,16 @@ class AStar {
 					//CHECK IF SAME XCOORD IS POSSIBLE PATH (BUT ABOVE)
 					if (line.charAt(currXCoord) != 'X') {
 						
-						path = new State(currXCoord, currYCoord-1);
-						possiblePaths.add(path);
+						//IF ITS NOT PREVIOUS PATH
+						if (!((currState.getPP().getXCoord() == currXCoord) && 
+							(currState.getPP().getYCoord() == (currYCoord-1)))) {
+
+							//CREATE A STATE AND ADD INTO POSSIBLEPATHS
+							path = new State(currXCoord, currYCoord-1);
+							path.setPP(currState);
+							possiblePaths.add(path);
+						}
+						
 					}
 				}
 				
@@ -155,18 +159,28 @@ class AStar {
 					
 					//IF CURR STATE'S LEFT IS A POSSIBLE PATH
 					if (line.charAt(currXCoord-1) != 'X') {
-						
-						//CREATE A STATE AND ADD INTO POSSIBLEPATHS
-						path = new State(currXCoord-1, currYCoord);
-						possiblePaths.add(path);
+
+						if (!((currState.getPP().getXCoord() == (currXCoord-1)) && 
+							(currState.getPP().getYCoord() == (currYCoord)))) {
+
+							//CREATE A STATE AND ADD INTO POSSIBLEPATHS
+							path = new State(currXCoord-1, currYCoord);
+							path.setPP(currState);
+							possiblePaths.add(path);
+						}
 					}
 
 					//IF CURR STATE'S RIGHT IS A POSSIBLE PATH
 					if (line.charAt(currXCoord+1) != 'X') {
-						
-						//CREATE A STATE AND ADD INTO POSSIBLEPATHS
-						path = new State(currXCoord+1, currYCoord);
-						possiblePaths.add(path);
+
+						if (!((currState.getPP().getXCoord() == (currXCoord+1)) && 
+							(currState.getPP().getYCoord() == (currYCoord)))) {
+
+							//CREATE A STATE AND ADD INTO POSSIBLEPATHS
+							path = new State(currXCoord+1, currYCoord);
+							path.setPP(currState);
+							possiblePaths.add(path);
+						}
 					}
 				}
 
@@ -178,9 +192,15 @@ class AStar {
 					
 					//CHECK IF SAME XCOORD IS POSSIBLE PATH (BUT BELOW)
 					if (line.charAt(currXCoord) != 'X') {
-						
-						path = new State(currXCoord, currYCoord+1);
-						possiblePaths.add(path);
+
+						if (!((currState.getPP().getXCoord() == (currXCoord)) && 
+							(currState.getPP().getYCoord() == (currYCoord+1)))) {
+
+							//CREATE A STATE AND ADD INTO POSSIBLEPATHS
+							path = new State(currXCoord, currYCoord+1);
+							path.setPP(currState);
+							possiblePaths.add(path);
+						}
 					}
 				}
 
@@ -204,4 +224,23 @@ class AStar {
 		// System.out.println("ENDING MOVE");
 		return possiblePaths;
 	}
+
+	//CALCULATE THE HEURISTIC VALUE OF A STATE USING EUCLIDEAN DISTANCE
+	//sqrt((current.x - goal.x)^2 + (current.y - goal.y)^2)
+	//public double calcHeuristic(int currXCoord, int currYCoord, int goalXCoord, int goalYCoord) {
+	public static double calcHeuristic(State currState, State goalState) {
+		
+		//double distance = Math.sqrt(Math.pow(currXCoord - goalXCoord, 2) + Math.pow(currYCoord - goalYCoord, 2));
+		double distance = Math.sqrt(Math.pow(currState.getXCoord() - goalState.getXCoord(), 2) + Math.pow(currState.getYCoord() - goalState.getYCoord(), 2));
+			
+		return distance;
+	}
+
+	// //CALCULATE THE F_VALUE OF THE STATE
+	// public static double calcF(double cost, double heuristic) {
+
+	// 	double f_value = cost + heuristic;
+
+	// 	return f_value;
+	// }
 }
