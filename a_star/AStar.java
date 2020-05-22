@@ -36,6 +36,10 @@ class AStar {
 			int sYCoord = 0;
 			
 			Frontier frontier;
+			State lowestF;
+			double heuristic = 0;
+			double cost = 0;
+			double fValue = heuristic + cost;
 
 			//FIND GOAL; AND START STATE
 			while(line != null) {
@@ -63,25 +67,28 @@ class AStar {
 					//FIND X COORDINATE OF GOAL
 					sXcoord = line.indexOf("S");
 
+					cost = 0;
 					startState = new State(sXcoord, sYCoord);
+					startState.setCost(cost);
 				}
 
 				totalNumLines++;
 				line = reader.readLine();
 			}
 
-			//SET UP START STATE IN FRONTIER
-			frontier = new Frontier(startState);
-
 			System.out.println("");
 			System.out.println("GOAL: ( "  + gXcoord + ", " + gYCoord + " )");
-			System.out.println("");
 			System.out.println("START: ( "  + sXcoord + ", " + sYCoord + " )");
 			System.out.println("");
 
-			
-			//HERE IS THE ALGORITHM
-			
+			//SET UP START STATE IN FRONTIER
+			frontier = new Frontier(startState);
+			lowestF = frontier.getLowestF();
+
+			//WHILE PATH(SMALLEST FVALUE) IS NOT GOAL
+
+
+
 
 			possiblePaths = move(startState);
 
@@ -90,10 +97,11 @@ class AStar {
 				System.out.println("");
 				// System.out.println("Possible Paths inside main");
 				System.out.println("( " + possiblePaths.get(i).getXCoord() + ", " + possiblePaths.get(i).getYCoord() + " )");
-				System.out.println("");
 
 				frontier.add(possiblePaths.get(i));
 			}
+
+
 
 
 		}
@@ -132,7 +140,7 @@ class AStar {
 					// System.out.println("	Line: " + lineIndex);
 					
 					//CHECK IF SAME XCOORD IS POSSIBLE PATH (BUT ABOVE)
-					if (line.charAt(currXCoord) == ' ') {
+					if (line.charAt(currXCoord) != 'X') {
 						
 						path = new State(currXCoord, currYCoord-1);
 						possiblePaths.add(path);
@@ -146,7 +154,7 @@ class AStar {
 					// System.out.println("	Line: " + lineIndex);
 					
 					//IF CURR STATE'S LEFT IS A POSSIBLE PATH
-					if (line.charAt(currXCoord-1) == ' ') {
+					if (line.charAt(currXCoord-1) != 'X') {
 						
 						//CREATE A STATE AND ADD INTO POSSIBLEPATHS
 						path = new State(currXCoord-1, currYCoord);
@@ -154,7 +162,7 @@ class AStar {
 					}
 
 					//IF CURR STATE'S RIGHT IS A POSSIBLE PATH
-					if (line.charAt(currXCoord+1) == ' ') {
+					if (line.charAt(currXCoord+1) != 'X') {
 						
 						//CREATE A STATE AND ADD INTO POSSIBLEPATHS
 						path = new State(currXCoord+1, currYCoord);
@@ -169,7 +177,7 @@ class AStar {
 					// System.out.println("	Line: " + lineIndex);
 					
 					//CHECK IF SAME XCOORD IS POSSIBLE PATH (BUT BELOW)
-					if (line.charAt(currXCoord) == ' ') {
+					if (line.charAt(currXCoord) != 'X') {
 						
 						path = new State(currXCoord, currYCoord+1);
 						possiblePaths.add(path);

@@ -3,32 +3,40 @@ import java.io.*;
 
 class Frontier {
 
-	State _initialState;
+	State root;
+
+	/* CONSTRUCTOR */
 
 	public Frontier(State initialState) {
 
-		_initialState = initialState;
+		root = initialState;
 	}
 
-	public double calcHeuristic(int currXCoord, int currYCoord, int goalXCoord, int goalYCoord) {
+	/* METHODS */
 
-		//USING EUCLIDEAN DISTANCE
-		//sqrt((current.x - goal.x)^2 + (current.y - goal.y)^2)
-		double distance = Math.sqrt(Math.pow(currXCoord - goalXCoord, 2) + Math.pow(currYCoord - goalYCoord, 2));
+	//CALCULATE THE HEURISTIC VALUE OF A STATE USING EUCLIDEAN DISTANCE
+	//sqrt((current.x - goal.x)^2 + (current.y - goal.y)^2)
+	//public double calcHeuristic(int currXCoord, int currYCoord, int goalXCoord, int goalYCoord) {
+	public double calcHeuristic(State currState, State goalState) {
+		
+		//double distance = Math.sqrt(Math.pow(currXCoord - goalXCoord, 2) + Math.pow(currYCoord - goalYCoord, 2));
+		double distance = Math.sqrt(Math.pow(currState.getXCoord() - goalState.getXCoord(), 2) + Math.pow(currState.getYCoord() - goalState.getYCoord(), 2));
 			
 		return distance;
 	}
 
-	public double calcF(int cost, double heuristic) {
+	//CALCULATE THE F_VALUE OF THE STATE
+	public double calcF(double cost, double heuristic) {
 
 		double f_value = cost + heuristic;
 
 		return f_value;
 	}
 
+	//FIND THE LOWEST F_VALUED STATE
 	public State getLowestF() {
 
-		State curr = _initialState;
+		State curr = root;
 		State min_fValue = curr;
 
 		//WHILE NOT END OF THE LIST
@@ -61,7 +69,7 @@ class Frontier {
 	//ADDING NEW STATE AT THE END OF THE LIST
 	public void add(State state) {
 
-		State curr = _initialState;
+		State curr = root;
 
 		while(curr.getNext() != null) {
 
@@ -75,12 +83,12 @@ class Frontier {
 	public void remove(int x, int y) {
 
 		//IF THE STATE TO REMOVE IS AT THE HEAD OF THE LIST
-		if((_initialState.getXCoord() == x) && (_initialState.getYCoord() == y)) {
+		if((root.getXCoord() == x) && (root.getYCoord() == y)) {
 
-			_initialState = _initialState.getNext();
+			root = root.getNext();
 		}
 
-		State curr = _initialState;
+		State curr = root;
 
 		while(!(curr.getNext().getXCoord() == x) && (curr.getNext().getYCoord() == y)) {
 
@@ -88,9 +96,4 @@ class Frontier {
 		}
 		curr.setNext(curr.getNext().getNext());
 	}
-
-	//CHECK IF COORD EXISTS IN THE LIST
-	// public State doesExist() {
-		
-	// }
 }

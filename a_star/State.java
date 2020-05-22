@@ -7,23 +7,23 @@ class State {
 	private int _xCoord;
 	private int _yCoord;
 
-	private double _fValue;
-	private int _cost;	
+	private double _cost;	
 	private double _heuristicValue;
+	private double _fValue;
 	
 	private State _next;
 	
 
 	/* CONSTRUCTOR */
 
-	//MAINLY USED FOR GOAL AND STARTER
+	//MAINLY USED FOR GOAL
 	public State(int xCoord, int yCoord) {
 
 		_xCoord = xCoord;
 		_yCoord = yCoord;
 	}
 
-	public State(int xCoord, int yCoord, double heuristicValue, int cost, double fValue) {
+	public State(int xCoord, int yCoord, double heuristicValue, double cost, double fValue) {
 
 		_xCoord = xCoord;
 		_yCoord = yCoord;
@@ -45,14 +45,29 @@ class State {
 		return _yCoord;
 	}
 
-	public int getCost() {
+	public void setCost(double cost) {
+
+		_cost = cost;
+	}
+
+	public double getCost() {
 
 		return _cost;
+	}
+
+	public void setHeuristic(double heuristicValue) {
+
+		_heuristicValue = heuristicValue;
 	}
 
 	public double getHeuristic() {
 
 		return _heuristicValue;
+	}
+
+	public void setfValue(double fValue) {
+
+		_fValue = fValue;
 	}
 
 	public double getFValue() {
