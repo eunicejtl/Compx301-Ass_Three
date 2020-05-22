@@ -4,48 +4,50 @@ import java.io.*;
 class State {
 
 	//DECLARE VARIABLES
-	private int _numMoves;
-	private double _heuristicValue;
-	//String _path;
-	private int xCoord;
-	private int yCoord;
-	private State _next;
+	private int _xCoord;
+	private int _yCoord;
+
 	private double _fValue;
+	private int _cost;	
+	private double _heuristicValue;
+	
+	private State _next;
+	
 
-	public State(int x, int y) {
+	/* CONSTRUCTOR */
 
-		xCoord = x;
-		yCoord = y;
+	//MAINLY USED FOR GOAL AND STARTER
+	public State(int xCoord, int yCoord) {
+
+		_xCoord = xCoord;
+		_yCoord = yCoord;
 	}
 
-	/*public String getPath() {
+	public State(int xCoord, int yCoord, double heuristicValue, int cost, double fValue) {
 
-		return _path;
-	}*/
-
-	public int getX() {
-
-		return xCoord;
-	}
-
-	public int getY() {
-
-		return yCoord;
-	}
-
-	public void setMoves(int numMoves) {
-
-		_numMoves = numMoves;
-	}
-
-	public int getMoves() {
-
-		return _numMoves;
-	}
-
-	public void setHeuristic(double heuristicValue) {
-
+		_xCoord = xCoord;
+		_yCoord = yCoord;
 		_heuristicValue = heuristicValue;
+		_cost = cost;
+		_fValue = fValue;
+
+	}
+
+	/* METHOD */
+
+	public int getXCoord() {
+
+		return _xCoord;
+	}
+
+	public int getYCoord() {
+
+		return _yCoord;
+	}
+
+	public int getCost() {
+
+		return _cost;
 	}
 
 	public double getHeuristic() {
@@ -56,11 +58,6 @@ class State {
 	public double getFValue() {
 
 		return _fValue;
-	}
-
-	public void setFValue(double fValue) {
-
-		_fValue = fValue;
 	}
 
 	public void setNext(State next) {
