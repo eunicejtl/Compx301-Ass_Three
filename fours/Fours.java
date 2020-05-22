@@ -31,16 +31,20 @@ class Fours {
 			//Set up initial state
 			Frontier queue = new Frontier();
 
-			root = queue.getRoot();
-			expression = root.getExpression();
+			// root = queue.getRoot();
+			// expression = root.getExpression();
 
-			int num = 21;
+			int num = 1;
 
-			while (num != 41) {
+			while (num != 101) {
+
+				queue = new Frontier();
+				root = queue.getRoot();
+				expression = root.getExpression();
 
 				while (eval(expression) != num) {
 
-					System.out.println("Debug: Looking");
+					// System.out.println("Debug: Looking");
 
 					//ADDING THE CHILDREN AT THE END OF THE LIST
 					for (int i = 0; i < 8 ; i++ ) {
