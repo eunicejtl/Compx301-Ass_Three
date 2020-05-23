@@ -132,39 +132,40 @@ public class EvaluateString
 		// Stack for numbers: 'values' 
 		Stack<Double> values = new Stack<Double>(); 
 
-		// Stack for Operators: 'ops' 
-		Stack<String> ops = new Stack<String>(); 
+		// Stack for Operators: 'operations' 
+		Stack<String> operations = new Stack<String>(); 
 
-		for (int i = 0; i < tokens.length; i++) 
-		{ 
-			// Current token is a whitespace, skip it 
-			if (tokens[i].compareTo(" ") == 0) 
-				continue; 
+		for (int i = 0; i < tokens.length; i++) { 
 
-			// Current token is a number, push it to stack for numbers 
-			//if (tokens[i] >= '0' && tokens[i] <= '9')
-			if (isNum(tokens[i]))
-			{ 
+			// If current token is a whitespace, skip it 
+			if (tokens[i].compareTo(" ") == 0) { continue; }
+
+			// If current token is a number, push it to stack for numbers 
+			if (isNum(tokens[i])) {
+
 				StringBuffer sbuf = new StringBuffer(); 
+
 				// There may be more than one digits in number 
-				//while (i < tokens.length && tokens[i] >= '0' && tokens[i] <= '9')
-				while (i < tokens.length && isNum(tokens[i])) 
+				while (i < tokens.length && isNum(tokens[i])) {
+
 					sbuf.append(tokens[i++]); 
+				}
+
 				values.push(Double.parseDouble(sbuf.toString())); 
 			} 
 
-			// Current token is an opening brace, push it to 'ops' 
-			//else if (tokens[i] == '(')
-			else if (tokens[i].compareTo("(") == 0)
-				ops.push(tokens[i]); 
+			// If current token is an opening brace, push it to 'operations'
+			else if (tokens[i].compareTo("(") == 0) { operations.push(tokens[i]); }
 
-			// Closing brace encountered, solve entire brace 
-			//else if (tokens[i] == ')')
-			else if (tokens[i].compareTo(")") == 0)
-			{ 
-				while (ops.peek().compareTo("(") != 0) 
-				values.push(applyOp(ops.pop(), values.pop(), values.pop())); 
-				ops.pop(); 
+			// If closing brace encountered, solve entire brace 
+			else if (tokens[i].compareTo(")") == 0) { 
+
+				while (operations.peek().compareTo("(") != 0) {
+
+					values.push(applyOp(operations.pop(), values.pop(), values.pop())); 
+				}
+
+				operations.pop(); 
 			} 
 
 			// Current token is an operator. 
@@ -172,21 +173,21 @@ public class EvaluateString
 					tokens[i].compareTo("*") == 0 || tokens[i].compareTo("/") == 0 || 
 					tokens[i].compareTo("^") == 0) 
 			{ 
-				// While top of 'ops' has same or greater precedence to current 
-				// token, which is an operator. Apply operator on top of 'ops' 
+				// While top of 'operations' has same or greater precedence to current 
+				// token, which is an operator. Apply operator on top of 'operations' 
 				// to top two elements in values stack 
-				while (!ops.empty() && hasPrecedence(tokens[i], ops.peek())) 
-				values.push(applyOp(ops.pop(), values.pop(), values.pop())); 
+				while (!operations.empty() && hasPrecedence(tokens[i], operations.peek())) 
+				values.push(applyOp(operations.pop(), values.pop(), values.pop())); 
 
-				// Push current token to 'ops'. 
-				ops.push(tokens[i]); 
+				// Push current token to 'operations'. 
+				operations.push(tokens[i]); 
 			} 
 		} 
 
 		// Entire expression has been parsed at this point, apply remaining 
-		// ops to remaining values 
-		while (!ops.empty()) 
-			values.push(applyOp(ops.pop(), values.pop(), values.pop())); 
+		// operations to remaining values 
+		while (!operations.empty()) 
+			values.push(applyOp(operations.pop(), values.pop(), values.pop())); 
 
 		// Top of 'values' contains result, return it 
 		return values.pop(); 
@@ -248,12 +249,13 @@ public class EvaluateString
 	// Driver method to test above methods 
 	public static void main(String[] args) 
 	{ 
-		System.out.println(EvaluateString.evaluate("10 + 2 ^ 6")); 
-		System.out.println(EvaluateString.evaluate("2 ^ 4 + 100 * 2 + 12")); 
-		System.out.println(EvaluateString.evaluate(" 100 * ( 2 + 12 ) ")); 
-		System.out.println(EvaluateString.evaluate(" 100 * ( 2 + 12 ) / 14 "));
-        System.out.println(EvaluateString.evaluate("2 ^ 2"));
-        System.out.println(EvaluateString.evaluate("4 + 4.4"));
+		System.out.println("-4.0 == " + EvaluateString.evaluate("10 + 8 / 2 - 3 * 6")); 
+		System.out.println("228.0 == " + EvaluateString.evaluate("2 ^ 4 + 100 * 2 + 12")); 
+		System.out.println("1400.0 == " + EvaluateString.evaluate(" 100 * ( 2 + 12 ) ")); 
+		System.out.println("100.0 == " + EvaluateString.evaluate(" 100 * ( 2 + 12 ) / 14 "));
+		System.out.println("14003.0 == " + EvaluateString.evaluate(" 100 * ( 2 + 12 ) * ( 12 - 2 ) + 12 / 4"));
+        System.out.println("4.0 == " + EvaluateString.evaluate("2 ^ 2"));
+        System.out.println("8.4 == " + EvaluateString.evaluate("4 + 4.4"));
 	} 
 }
 

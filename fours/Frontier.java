@@ -8,24 +8,29 @@ import java.io.*;
 class Frontier {
 
 	private State root;
+	private State tail;
 
 	public Frontier() {
 
 		//Set the initial frontier
 		root = new State("4");
+		tail = root;
 	}
 
 	//ADD STATES AT THE END OF THE QUEUE
 	public void enqueue(State state) {
 
-		State curr = root;
+		// State curr = root;
 
-		while(curr.getNext() != null) {
+		// while(curr.getNext() != null) {
 
-			curr = curr.getNext();
-		}
+		// 	curr = curr.getNext();
+		// }
 		
-		curr.setNext(state);
+		// curr.setNext(state);
+
+		tail.setNext(state);
+		tail = state;
 	}
 
 	//REMOVE FROM THE TOP THE LIST
