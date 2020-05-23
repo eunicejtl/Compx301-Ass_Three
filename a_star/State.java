@@ -45,20 +45,20 @@ class State {
 		return _yCoord;
 	}
 
-	public void setCost(double cost) {
+	/*public void setCost(double cost) {
 
 		_cost = cost;
-	}
+	}*/
 
 	public double getCost() {
 
 		return _cost;
 	}
 
-	public void setHeuristic(double heuristicValue) {
+	/*public void setHeuristic(double heuristicValue) {
 
 		_heuristicValue = heuristicValue;
-	}
+	}*/
 
 	public double getHeuristic() {
 
@@ -98,14 +98,12 @@ class State {
 	/* METHODS */
 
 	//CALCULATE THE F_VALUE OF THE STATE
-	public double setfValue(double cost, double heuristic) {
+	public void setfValue(double cost, double heuristic) {
 
-		_heuristicValue = heuristicValue;
+		_heuristicValue = heuristic;
 		_cost = cost;
 		
 		_fValue = cost + heuristic;
-
-		return f_value;
 	}
 
 }
