@@ -112,7 +112,7 @@ class AStar {
 				else {
 
 					System.out.println("THE LIST IS EMPTY");
-					break;
+					//break;
 				}
 
 				for (int i=0; i < possiblePaths.size() ; i++) {
@@ -171,6 +171,9 @@ class AStar {
 			int currXCoord = currState.getXCoord();
 			int currYCoord = currState.getYCoord();
 
+			System.out.pritnln("THE CURRENT LINE IS: " + line);
+			System.out.println("");
+
 			//WHILE NOT END OF THE LINE
 			while (line != null) {
 
@@ -178,9 +181,10 @@ class AStar {
 
 				//CHECK IF UP IS A POSSIBLE PATH
 				//IF LINE IS ABOVE THE CURR STATE
+				System.out.println("ABOVE THE CURR Y COORDINATE: " + currYCoord -1);
 				if (lineIndex == (currYCoord - 1)) {
 
-					System.out.println("	Line: " + lineIndex);
+					System.out.println("Line: " + lineIndex);
 					
 					//CHECK IF SAME XCOORD IS POSSIBLE PATH (BUT ABOVE)
 					if (line.charAt(currXCoord) != 'X') {
@@ -203,6 +207,8 @@ class AStar {
 				if (lineIndex == (currYCoord)) {
 
 					// System.out.println("	Line: " + lineIndex);
+
+					System.out.println("TO THE LEFT OF THE STATE: " + currXCoord -1);
 					
 					//IF CURR STATE'S LEFT IS A POSSIBLE PATH
 					if (line.charAt(currXCoord-1) != 'X') {
@@ -216,6 +222,8 @@ class AStar {
 							possiblePaths.add(path);
 						//}
 					}
+
+					System.out.println("TO THE RIGHT OF THE STATE: " + currXCoord +1);
 
 					//IF CURR STATE'S RIGHT IS A POSSIBLE PATH
 					if (line.charAt(currXCoord+1) != 'X') {
@@ -233,6 +241,9 @@ class AStar {
 
 				//CHECK IF DOWN IS A POSSIBLE PATH
 				//IF LINE IS BELOW THE CURR STATE
+
+				System.out.println("BELOW THE CURR Y COORDINATE: " + currYCoord +1);
+
 				if (lineIndex == (currYCoord + 1)) {
 
 					// System.out.println("	Line: " + lineIndex);
