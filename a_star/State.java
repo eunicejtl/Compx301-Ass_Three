@@ -23,16 +23,6 @@ class State {
 		_yCoord = yCoord;
 	}
 
-	public State(int xCoord, int yCoord, double heuristicValue, double cost, double fValue) {
-
-		_xCoord = xCoord;
-		_yCoord = yCoord;
-		_heuristicValue = heuristicValue;
-		_cost = cost;
-		_fValue = fValue;
-
-	}
-
 	/* METHOD */
 
 	public int getXCoord() {
@@ -45,30 +35,15 @@ class State {
 		return _yCoord;
 	}
 
-	/*public void setCost(double cost) {
-
-		_cost = cost;
-	}*/
-
 	public double getCost() {
 
 		return _cost;
 	}
 
-	/*public void setHeuristic(double heuristicValue) {
-
-		_heuristicValue = heuristicValue;
-	}*/
-
 	public double getHeuristic() {
 
 		return _heuristicValue;
 	}
-
-	// public void setfValue(double fValue) {
-
-	// 	_fValue = fValue;
-	// }
 
 	public double getFValue() {
 
@@ -102,8 +77,8 @@ class State {
 
 		_heuristicValue = heuristic;
 		_cost = cost;
-		
 		_fValue = cost + heuristic;
-	}
 
+		return;
+	}
 }

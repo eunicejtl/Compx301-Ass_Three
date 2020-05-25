@@ -1,10 +1,17 @@
 import java.util.*;
 import java.io.*;
 
-class AStar {
+import java.awt.*;
+import javax.swing.*;
 
-	public static FileReader mfile;
-	public static BufferedReader mReader;
+class AStar extends Canvas {
+
+	public static Frontier frontier;
+	public static Frontier visited;
+	public static State goalState = new State(0,0);
+	public static State startState = new State(0,0);
+
+	public static ArrayList<String> map = new ArrayList<String>();
 
 	public static void main(String[] args) {
 
@@ -19,129 +26,128 @@ class AStar {
 			FileReader file = new FileReader(args[0]);
 			BufferedReader reader = new BufferedReader(file);
 
-			mfile = new FileReader(args[0]);
-			mReader = new BufferedReader(mfile);
-
 			//DECLARE VARIABLES
 			String line = reader.readLine();
 
 			ArrayList<State> possiblePaths = new ArrayList<State>();
-			State goalState = new State(0,0);
-			State startState = new State(0,0);
-
-			int totalNumLines = 0;
-			int gXcoord = 0;
-			int gYCoord = 0;
-			int sXcoord = 0;
-			int sYCoord = 0;
-			
-			Frontier frontier;
+			StringBuilder new_line_sb;
+			String new_line_s;
 			State lowestF;
-			double heuristic = 0;
-			double cost = 0;
-			double fValue = heuristic + cost;
-
+			int totalNumLines = 0;
+			
 			//FIND GOAL; AND START STATE
 			while(line != null) {
 
-				//System.out.println("Line: " + line + " Total Lines: "  + totalNumLines);
+				System.out.println("Line: " + line + " Total Lines: "  + totalNumLines);
+				map.add(line);
 
 				//GET THE LINE AND X POS OF G
 				if(line.contains("G")) {
 
-					//FIND Y COORDINATE OF GOAL
-					gYCoord = totalNumLines;
-
-					//FIND X COORDINATE OF GOAL
-					gXcoord = line.indexOf("G");
-
-					goalState = new State(gXcoord, gYCoord);
-					//System.out.println("Goal State is: " + goalState.getXCoord() + ", " + goalState.getYCoord()); 
+					goalState = new State(line.indexOf("G"), totalNumLines);
 				}
 
 				//GET THE LINE AND X POS OF G
 				if(line.contains("S")) {
 
-					//FIND Y COORDINATE OF GOAL
-					sYCoord = totalNumLines;
-
-					//FIND X COORDINATE OF GOAL
-					sXcoord = line.indexOf("S");
-
-					cost = 0;
-					startState = new State(sXcoord, sYCoord);
-
-					//Storing the heuristic and cost value as well as setting f value
-					startState.setfValue(cost, calcHeuristic(startState, goalState));
+					startState = new State(line.indexOf("S"), totalNumLines);
+					startState.setfValue(0, calcHeuristic(startState, goalState));
 				}
 
 				totalNumLines++;
 				line = reader.readLine();
 			}
 
-			/*System.out.println("");
-			System.out.println("GOAL: ( "  + gXcoord + ", " + gYCoord + " )");
-			System.out.println("START: ( "  + sXcoord + ", " + sYCoord + " )");
-			System.out.println("");*/
+			System.out.println("");
+			System.out.println("GOAL: ( "  + goalState.getXCoord() + ", " + goalState.getYCoord() + " )");
+			System.out.println("START: ( "  + startState.getXCoord() + ", " + startState.getYCoord() + " )");
+			System.out.println("");
 
 			//SET UP START STATE IN FRONTIER
 			frontier = new Frontier(startState);
-			System.out.println("START: ( "  + startState.getXCoord() + ", " + startState.getYCoord() + " )");
+			visited = new Frontier(new State(0,0));
 			lowestF = frontier.getLowestF();
-			System.out.println("LOWEST F: ( "  + lowestF.getXCoord() + ", " + lowestF.getYCoord() + " )");
-
-			System.out.println("HEURISTIC VALUE OF LOWEST F: "  + lowestF.getHeuristic());
-
 
 			//WHILE PATH(SMALLEST FVALUE) IS NOT GOAL
-			while(lowestF.getHeuristic() != 0) {
+            while(lowestF.getHeuristic() != 0) {
 
-				System.out.println("IN THE WHILE LOOP... ");
+                possiblePaths = move(lowestF);
 
-				possiblePaths = move(lowestF);
+                if(possiblePaths.size() != 0) {
 
-				if(possiblePaths.size() != 0) {
-
-					System.out.println("THE LIST IS NOT EMPTY");
+					System.out.println("	POSSIBLE PATHS FOR: ( "  + lowestF.getXCoord() + ", " + lowestF.getYCoord() + " )");
+					System.out.println("");
 
 					for(State s: possiblePaths) {
 
-						System.out.println("POSSIBLE PATHS: ( "  + s.getXCoord() + ", " + s.getYCoord() + " )");
+						System.out.println("		POSSIBLE PATHS: ( "  + s.getXCoord() + ", " + s.getYCoord() + " )");
 					}
 				}
-				else {
+				System.out.println("");
 
-					System.out.println("THE LIST IS EMPTY");
-					//break;
-				}
+                for (int i=0; i < possiblePaths.size() ; i++) {
 
-				for (int i=0; i < possiblePaths.size() ; i++) {
-					
-					System.out.println("");
-					System.out.println("( " + possiblePaths.get(i).getXCoord() + ", " + possiblePaths.get(i).getYCoord() + " )");
+                    // if(frontier.getLowestCost(possiblePaths.get(i))) {
 
-					
-					System.out.println("CHECKING THE LOWEST COST WITHIN THE FRONTIER: " + frontier.getLowestCost(possiblePaths.get(i)));
-					if(frontier.getLowestCost(possiblePaths.get(i))) {
+                    //     frontier.add(possiblePaths.get(i));
+                    // }
 
-						frontier.add(possiblePaths.get(i));
+                    if(frontier.findLowestF(possiblePaths.get(i))) {
 
-						//SET THE HEURISTIC VALUE AND COST OF NEW STATE
-						cost++;
-						heuristic = calcHeuristic(possiblePaths.get(i), goalState);
+                        if (!isVisited(possiblePaths.get(i))) {
+                        	
+                        	frontier.add(possiblePaths.get(i));
+                        }
+                    }
+                }
 
-						//MUST SET THE FVALUE OF NEW STATE
-						possiblePaths.get(i).setfValue(cost, heuristic);
+                System.out.println("	ADDING TO VISITED");
+                System.out.println("");
 
-						System.out.println("NEW PATH ADDING: ( " + possiblePaths.get(i).getXCoord() + " , " + possiblePaths.get(i).getYCoord() + " )");
-					}
-				}
-				frontier.remove(lowestF);
+                visited.add(new State(lowestF.getXCoord(), lowestF.getYCoord()));
+                visited.displayFrontier();
+                System.out.println("");
 
-				lowestF = frontier.getLowestF();
-				System.out.println("NEW LOWEST F VALUE: ( " + frontier.getLowestF().getXCoord() + ", " + frontier.getLowestF().getYCoord() + " )");
-				System.out.println("HEURISTIC OF NEW STATE: " + frontier.getLowestF().getHeuristic());
-			}
+                frontier.remove(lowestF);
+                lowestF = frontier.getLowestF();
+
+                frontier.displayFrontier();
+                System.out.println("");
+                System.out.println("SIZE: " + frontier.getSize());
+                System.out.println("");
+                System.out.println("	NEW LOWEST F: ( "  + lowestF.getXCoord() + ", " + lowestF.getYCoord() + " )");
+                System.out.println("");
+
+                new_line_sb = new StringBuilder(map.get(lowestF.getYCoord()));
+                new_line_sb.setCharAt(lowestF.getXCoord(), '.');
+                new_line_s = new_line_sb.toString();
+                map.set(lowestF.getYCoord(), new_line_s);
+            }
+
+            new_line_sb = new StringBuilder(map.get(goalState.getYCoord()));
+            new_line_sb.setCharAt(goalState.getXCoord(), 'G');
+            new_line_s = new_line_sb.toString();
+            map.set(goalState.getYCoord(), new_line_s);
+
+            new_line_sb = new StringBuilder(map.get(startState.getYCoord()));
+            new_line_sb.setCharAt(startState.getXCoord(), 'S');
+            new_line_s = new_line_sb.toString();
+            map.set(startState.getYCoord(), new_line_s);
+
+            frontier.displayFrontier();
+
+            //CREATING GUI
+            AStar gui = new AStar(); 
+			JFrame frame = new JFrame("Assignment 3");
+
+			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			frame.setSize(800,800);
+
+			//JButton button = new JButton("Press");
+			//frame.getContentPane().add(button);
+			frame.add(gui);
+			frame.setVisible(true);
+
 		}
 		catch(Exception eAStar) {
 
@@ -149,147 +155,201 @@ class AStar {
 		}
 	}
 
-	//This method is used to get the list of possible paths a current state can go to
-	//Also checks if the state has encountered a previous path
-	public static ArrayList<State> move(State currState) {
+	public void paint(Graphics g) {
 
-		System.out.println("");
-		System.out.println("WITHIN THE MOVE METHOD");
-		System.out.println("CURRENT STATE'S COORDS: (" + currState.getXCoord() + " , " + currState.getYCoord() + " )");
-		System.out.println("");
+		int width = 10;
+		int height = 10;
+		int dSize = 20; //20
+		int fSize = 16; //16
+
+
+		for (int i = 0; i < map.size() ; i++) {
+
+			String line = map.get(i);
+
+			for (int j = 0; j < line.length() ; j++) {
+
+				if (line.charAt(j) == '+' || line.charAt(j) == '-' || line.charAt(j) == '|') {
+					
+					g.setColor(new Color(128,76,88));
+					g.drawRect(width, height, dSize, dSize);
+					g.fillRect(width+2,height+2, fSize, fSize);
+
+				}
+				else if (line.charAt(j) == 'X') {
+
+					g.setColor(new Color(179,128,139));
+					g.drawRect(width, height, dSize, dSize);
+					g.fillRect(width+2,height+2, fSize, fSize);
+				}
+				else if (line.charAt(j) == 'S') {
+					
+					g.setColor(new Color(142,175,188));
+					g.drawRect(width, height, dSize, dSize);
+					g.fillRect(width+2,height+2, fSize, fSize);
+				}
+				else if (line.charAt(j) == 'G') {
+					
+					g.setColor(new Color(85,127,144));
+					g.drawRect(width, height, dSize, dSize);
+					g.fillRect(width+2,height+2, fSize, fSize);
+				}
+				else if (line.charAt(j) == '.') {
+					
+					g.setColor(new Color(198,158,187));
+					g.drawRect(width, height, dSize, dSize);
+					g.fillRect(width+2,height+2, fSize, fSize);
+				}
+				width += 20;
+			}
+
+			height += 20;
+			width = 10;
+		}
+	}
+
+	public static ArrayList<State> move(State currState) {
 		
 		ArrayList<State> possiblePaths = new ArrayList<State>();
 
-		try {
+		State path;
+		int currXCoord = currState.getXCoord();
+		int currYCoord = currState.getYCoord();
 
-			String line = mReader.readLine();
-			int lineIndex = 0;
-			
-			State path;
+		//CHECK IF UP IS A POSSIBLE PATH
+		if ((map.get(currYCoord-1).charAt(currXCoord)) != 'X' && 
+			(map.get(currYCoord-1).charAt(currXCoord)) != '|' && 
+			(map.get(currYCoord-1).charAt(currXCoord)) != '-') {
 
-			//Get the coordinates of the state we are looking at
-			int currXCoord = currState.getXCoord();
-			int currYCoord = currState.getYCoord();
+			//IF CURRSTATE IS THE STARTSTATE == NO PRREVIOUS PATH
+			if (frontier.compareState(currState, startState)) {
 
-			System.out.pritnln("THE CURRENT LINE IS: " + line);
-			System.out.println("");
+				//CREATE A STATE AND ADD INTO POSSIBLEPATHS
+				path = new State(currXCoord, currYCoord - 1);
+				path.setfValue((currState.getCost()+1), calcHeuristic(path, goalState));
+				path.setPP(currState);
+				possiblePaths.add(path);
 
-			//WHILE NOT END OF THE LINE
-			while (line != null) {
+			}
+			//IF NOT START STATE AND NOT PREVIOUS PATH
+			else if (!((currState.getPP().getXCoord() == (currXCoord)) && 
+				(currState.getPP().getYCoord() == (currYCoord - 1)))) {
 
-				// System.out.println("Line: " + lineIndex);
+				//CREATE A STATE AND ADD INTO POSSIBLEPATHS
+				path = new State(currXCoord, currYCoord - 1);
+				path.setfValue((currState.getCost()+1), calcHeuristic(path, goalState));
+				path.setPP(currState);
+				possiblePaths.add(path);
+			}	
+		}
 
-				//CHECK IF UP IS A POSSIBLE PATH
-				//IF LINE IS ABOVE THE CURR STATE
-				System.out.println("ABOVE THE CURR Y COORDINATE: " + currYCoord -1);
-				if (lineIndex == (currYCoord - 1)) {
+		//CHECK IF SIDE IS A POSSIBLE PATHS
+		//IF CURR STATE'S LEFT IS A POSSIBLE PATH
+		if ((map.get(currYCoord).charAt(currXCoord-1)) != 'X' && 
+			(map.get(currYCoord).charAt(currXCoord-1)) != '|' && 
+			(map.get(currYCoord).charAt(currXCoord-1)) != '-') {
 
-					System.out.println("Line: " + lineIndex);
-					
-					//CHECK IF SAME XCOORD IS POSSIBLE PATH (BUT ABOVE)
-					if (line.charAt(currXCoord) != 'X') {
-						
-						//IF ITS NOT PREVIOUS PATH
-						//if (!((currState.getPP().getXCoord() == currXCoord) && 
-						//	(currState.getPP().getYCoord() == (currYCoord-1)))) {
+			//IF CURRSTATE IS THE STARTSTATE == NO PRREVIOUS PATH
+			if (frontier.compareState(currState, startState)) {
 
-							//CREATE A STATE AND ADD INTO POSSIBLEPATHS
-							path = new State(currXCoord, currYCoord-1);
-							path.setPP(currState);
-							possiblePaths.add(path);
-						//}
-						
-					}
-				}
-				
-				//CHECK IF SIDE IS A POSSIBLE PATHS
-				//IF LINE IS THE SAME AS CURR STATE
-				if (lineIndex == (currYCoord)) {
+				//CREATE A STATE AND ADD INTO POSSIBLEPATHS
+				path = new State(currXCoord - 1 , currYCoord);
+				path.setfValue((currState.getCost()+1), calcHeuristic(path, goalState));
+				path.setPP(currState);
+				possiblePaths.add(path);
 
-					// System.out.println("	Line: " + lineIndex);
+			}
+			//IF NOT START STATE AND NOT PREVIOUS PATH
+			else if (!((currState.getPP().getXCoord() == (currXCoord - 1)) && 
+				(currState.getPP().getYCoord() == (currYCoord)))) {
 
-					System.out.println("TO THE LEFT OF THE STATE: " + currXCoord -1);
-					
-					//IF CURR STATE'S LEFT IS A POSSIBLE PATH
-					if (line.charAt(currXCoord-1) != 'X') {
-
-						//if (!((currState.getPP().getXCoord() == (currXCoord-1)) && 
-						//	(currState.getPP().getYCoord() == (currYCoord)))) {
-
-							//CREATE A STATE AND ADD INTO POSSIBLEPATHS
-							path = new State(currXCoord-1, currYCoord);
-							path.setPP(currState);
-							possiblePaths.add(path);
-						//}
-					}
-
-					System.out.println("TO THE RIGHT OF THE STATE: " + currXCoord +1);
-
-					//IF CURR STATE'S RIGHT IS A POSSIBLE PATH
-					if (line.charAt(currXCoord+1) != 'X') {
-
-						//if (!((currState.getPP().getXCoord() == (currXCoord+1)) && 
-						//	(currState.getPP().getYCoord() == (currYCoord)))) {
-
-							//CREATE A STATE AND ADD INTO POSSIBLEPATHS
-							path = new State(currXCoord+1, currYCoord);
-							path.setPP(currState);
-							possiblePaths.add(path);
-						//}
-					}
-				}
-
-				//CHECK IF DOWN IS A POSSIBLE PATH
-				//IF LINE IS BELOW THE CURR STATE
-
-				System.out.println("BELOW THE CURR Y COORDINATE: " + currYCoord +1);
-
-				if (lineIndex == (currYCoord + 1)) {
-
-					// System.out.println("	Line: " + lineIndex);
-					
-					//CHECK IF SAME XCOORD IS POSSIBLE PATH (BUT BELOW)
-					if (line.charAt(currXCoord) != 'X') {
-
-						//if (!((currState.getPP().getXCoord() == (currXCoord)) && 
-						//	(currState.getPP().getYCoord() == (currYCoord+1)))) {
-
-							//CREATE A STATE AND ADD INTO POSSIBLEPATHS
-							path = new State(currXCoord, currYCoord+1);
-							path.setPP(currState);
-							possiblePaths.add(path);
-						//}
-					}
-				}
-
-				lineIndex++;
-				line = mReader.readLine();
+				//CREATE A STATE AND ADD INTO POSSIBLEPATHS
+				path = new State(currXCoord - 1, currYCoord);
+				path.setfValue((currState.getCost()+1), calcHeuristic(path, goalState));
+				path.setPP(currState);
+				possiblePaths.add(path);
 			}
 		}
-		catch (Exception eMove) {
-			
-			System.err.println("Error: " + eMove);
+
+		//IF CURR STATE'S RIGHT IS A POSSIBLE PATH
+		if ((map.get(currYCoord).charAt(currXCoord+1)) != 'X' && 
+			(map.get(currYCoord).charAt(currXCoord+1)) != '|' && 
+			(map.get(currYCoord).charAt(currXCoord+1)) != '-') {
+
+			//IF CURRSTATE IS THE STARTSTATE == NO PRREVIOUS PATH
+			if (frontier.compareState(currState, startState)) {
+
+				//CREATE A STATE AND ADD INTO POSSIBLEPATHS
+				path = new State(currXCoord + 1, currYCoord);
+				path.setfValue((currState.getCost()+1), calcHeuristic(path, goalState));
+				path.setPP(currState);
+				possiblePaths.add(path);
+
+			}
+			//IF NOT START STATE AND NOT PREVIOUS PATH
+			else if (!((currState.getPP().getXCoord() == (currXCoord + 1)) && 
+				(currState.getPP().getYCoord() == (currYCoord)))) {
+
+				//CREATE A STATE AND ADD INTO POSSIBLEPATHS
+				path = new State(currXCoord + 1, currYCoord);
+				path.setfValue((currState.getCost()+1), calcHeuristic(path, goalState));
+				path.setPP(currState);
+				possiblePaths.add(path);
+			}
 		}
 
-		System.out.println("");
-		System.out.println("THIS IS WITHIN THE MOVE METHOD: ");
-		System.out.println("");
+		//CHECK IF DOWN IS A POSSIBLE PATH
+		//CHECK IF SAME XCOORD IS POSSIBLE PATH (BUT BELOW)
+		if ((map.get(currYCoord+1).charAt(currXCoord)) != 'X' && 
+			(map.get(currYCoord+1).charAt(currXCoord)) != '|' && 
+			(map.get(currYCoord+1).charAt(currXCoord)) != '-') {
 
-		for (int i=0; i < possiblePaths.size() ; i++) {
-				
-		 	System.out.println("");
-			System.out.println("Possible Paths inside move");
-			System.out.println("( " + possiblePaths.get(i).getXCoord() + ", " + possiblePaths.get(i).getYCoord() + " )");
-			System.out.println("");
+			//IF CURRSTATE IS THE STARTSTATE == NO PRREVIOUS PATH
+			if (frontier.compareState(currState, startState)) {
+
+				//CREATE A STATE AND ADD INTO POSSIBLEPATHS
+				path = new State(currXCoord, currYCoord + 1);
+				path.setfValue((currState.getCost()+1), calcHeuristic(path, goalState));
+				path.setPP(currState);
+				possiblePaths.add(path);
+
+			}
+			//IF NOT START STATE AND NOT PREVIOUS PATH
+			else if (!((currState.getPP().getXCoord() == (currXCoord)) && 
+				(currState.getPP().getYCoord() == (currYCoord + 1)))) {
+
+				//CREATE A STATE AND ADD INTO POSSIBLEPATHS
+				path = new State(currXCoord, currYCoord + 1);
+				path.setfValue((currState.getCost()+1), calcHeuristic(path, goalState));
+				path.setPP(currState);
+				possiblePaths.add(path);
+
+			}
 		}
 
-		System.out.println("ENDING MOVE");
 		return possiblePaths;
+	}
+
+	public static boolean isVisited(State state) {
+
+		State curr = visited.getRoot();
+
+		//WHILE NOT END OF THE LIST
+		while (curr != null) {
+
+			if (visited.compareState(curr, state)) {
+				
+				return true;
+			}
+
+			curr = curr.getNext();
+		}
+
+		return false;
 	}
 
 	//CALCULATE THE HEURISTIC VALUE OF A STATE USING EUCLIDEAN DISTANCE
 	//sqrt((current.x - goal.x)^2 + (current.y - goal.y)^2)
-	//public double calcHeuristic(int currXCoord, int currYCoord, int goalXCoord, int goalYCoord) {
 	public static double calcHeuristic(State currState, State goalState) {
 		
 		//double distance = Math.sqrt(Math.pow(currXCoord - goalXCoord, 2) + Math.pow(currYCoord - goalYCoord, 2));
@@ -298,11 +358,5 @@ class AStar {
 		return distance;
 	}
 
-	// //CALCULATE THE F_VALUE OF THE STATE
-	// public static double calcF(double cost, double heuristic) {
 
-	// 	double f_value = cost + heuristic;
-
-	// 	return f_value;
-	// }
 }
