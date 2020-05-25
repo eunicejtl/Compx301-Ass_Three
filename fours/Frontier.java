@@ -12,22 +12,13 @@ class Frontier {
 
 	public Frontier() {
 
-		//Set the initial frontier
+		//SET THE INITIAL FRONTIER VALUE
 		root = new State("4");
 		tail = root;
 	}
 
 	//ADD STATES AT THE END OF THE QUEUE
 	public void enqueue(State state) {
-
-		// State curr = root;
-
-		// while(curr.getNext() != null) {
-
-		// 	curr = curr.getNext();
-		// }
-		
-		// curr.setNext(state);
 
 		tail.setNext(state);
 		tail = state;

@@ -171,13 +171,15 @@ public class EvaluateString
 			// Current token is an operator. 
 			else if (tokens[i].compareTo("+") == 0 || tokens[i].compareTo("-") == 0 || 
 					tokens[i].compareTo("*") == 0 || tokens[i].compareTo("/") == 0 || 
-					tokens[i].compareTo("^") == 0) 
-			{ 
+					tokens[i].compareTo("^") == 0) {
+
 				// While top of 'operations' has same or greater precedence to current 
 				// token, which is an operator. Apply operator on top of 'operations' 
 				// to top two elements in values stack 
-				while (!operations.empty() && hasPrecedence(tokens[i], operations.peek())) 
-				values.push(applyOp(operations.pop(), values.pop(), values.pop())); 
+				while (!operations.empty() && hasPrecedence(tokens[i], operations.peek())) {
+
+					values.push(applyOp(operations.pop(), values.pop(), values.pop())); 
+				}
 
 				// Push current token to 'operations'. 
 				operations.push(tokens[i]); 
@@ -186,8 +188,10 @@ public class EvaluateString
 
 		// Entire expression has been parsed at this point, apply remaining 
 		// operations to remaining values 
-		while (!operations.empty()) 
+		while (!operations.empty()) {
+
 			values.push(applyOp(operations.pop(), values.pop(), values.pop())); 
+		}
 
 		// Top of 'values' contains result, return it 
 		return values.pop(); 
@@ -212,37 +216,43 @@ public class EvaluateString
 	// otherwise returns false. 
 	public static boolean hasPrecedence(String op1, String op2) 
 	{ 
-		if (op2.compareTo("(") == 0 || op2.compareTo(")") == 0) 
-			return false;
-		if (op1.compareTo("^") == 0 && (op2.compareTo("*") == 0 || op2.compareTo("/") == 0))
-			return false;
+		if (op2.compareTo("(") == 0 || op2.compareTo(")") == 0) { return false; }
+		if (op1.compareTo("^") == 0 && (op2.compareTo("*") == 0 || op2.compareTo("/") == 0)) { return false; }
 		if ((op1.compareTo("*") == 0 || op1.compareTo("/") == 0 || op1.compareTo("^") == 0) && 
-			(op2.compareTo("+") == 0 || op2.compareTo("-") == 0)) 
-			return false; 
-		else
+			(op2.compareTo("+") == 0 || op2.compareTo("-") == 0)) { return false; }
+		else {
+
 			return true; 
+		}
 	} 
 
 	// A utility method to apply an operator 'op' on operands 'a' 
 	// and 'b'. Return the result. 
 	public static double applyOp(String op, double b, double a) 
 	{ 
-		switch (op) 
-		{ 
-		case "+": 
-			return a + b; 
-		case "-": 
-			return a - b; 
-		case "*": 
-			return a * b; 
-		case "/": 
-			if (b == 0) 
-				throw new
-				UnsupportedOperationException("Cannot divide by zero"); 
-			return a / b;
-          case "^":
-            return Math.pow(a, b);
-		} 
+		switch (op) {
+
+			case "+": {
+				return a + b; 
+			}
+			case "-": {
+				return a - b; 
+			}
+			case "*": {
+				return a * b; 
+			}
+			case "/": {
+				if (b == 0) {
+					throw new
+					UnsupportedOperationException("Cannot divide by zero"); 
+				}
+				return a / b;
+			}
+			case "^": {
+	            return Math.pow(a, b);
+			}
+		}
+		
 		return 0; 
 	} 
 
