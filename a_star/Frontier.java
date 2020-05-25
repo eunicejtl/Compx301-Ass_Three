@@ -1,3 +1,7 @@
+/* Name: Meecah Cahayon + Eunice Llobet
+ * Student ID: 1259825 + 1330233
+ */
+
 import java.util.*;
 import java.io.*;
 
@@ -35,16 +39,21 @@ class Frontier {
 
         State curr = root;
 
+        //WHILE NOT THE STATE TO REMOVE
         while(!compareState(curr.getNext(), state)) {
 
+        	//GO NEXT
             curr = curr.getNext();
         }
 
+        //IF THE STATE TO REMOVE IS AT THE TAIL
         if (compareState(tail, curr.getNext())) {
         	
+        	//MAKE TAIL CURR
         	tail = curr;
         }
         
+        //SET CURR'S NEXT TO CURR'S NEXT'S NEXT
         curr.setNext(curr.getNext().getNext());
     }
 
@@ -57,61 +66,36 @@ class Frontier {
 		//WHILE NOT END OF THE LIST
 		while(curr != null) {
 
+			//IF CURR IS NOT END OF THE LIST
 			if (curr.getNext() != null) {
 
-				if(curr.getFValue() < curr.getNext().getFValue()) {
+				//IF CURR'S F VALUE IS LOWER OR EQUAL TO NEXT'S F VALUE
+				if(curr.getFValue() <= curr.getNext().getFValue()) {
 
+					//IF CURR F VALUE IS LOWER THAN THE SAVED STATE (LOWEST F VALUE)
 					if (curr.getFValue() <= min_fValue.getFValue()) {
 
+						//MAKE IT THE LOWEST F VALUE
 						min_fValue = curr;
 					}
 				}
 			}
+			//IF CURR IS THE TAIL
 			else {
 				
+				//IF CURR F VALUE IS LOWER THAN THE SAVED STATE (LOWEST F VALUE)
 				if (curr.getFValue() <= min_fValue.getFValue()) {
 
+					//MAKE IT THE LOWEST F VALUE
 					min_fValue = curr;
 				}
 			}
 
+			//GO NEXT
 			curr = curr.getNext();
 		}
 
 		return min_fValue;
-	}
-
-	public boolean findLowestF(State state) {
-
-		State curr = root;
-		State min_fValue = curr;
-		boolean returnValue = true;
-
-		//WHILE NOT END OF THE LIST
-		while(curr != null) {
-
-			if (compareState(curr, state)) {
-
-				if(curr.getFValue() <= state.getFValue()) {
-
-					min_fValue = curr;
-					returnValue = false;
-				}
-				else {
-					
-					min_fValue = curr;
-
-                    //Remove the existing state
-                    remove(curr);
-
-                    returnValue = true;
-				}
-			}
-
-			curr = curr.getNext();
-		}
-
-		return returnValue;
 	}
 
     //FIND THE LOWEST COST STATE IF SAME STATE
@@ -124,31 +108,36 @@ class Frontier {
         //WHILE NOT END OF THE LIST
         while(curr != null) {
 
+            //IF STATES ARE THE SAME
             if(compareState(curr, state)) {
 
+                //IF EXISTING STATE'S COST IS LOWER OR EQUAL TO NEW STATE'S COST
                 if(curr.getCost() <= state.getCost()) {
 
+                    //MAKE CURR AS THE MIN COST MAKE RETURN FALSE
                     min_cost = curr;
                     returnValue = false;
                 }
+                //IF NEW STATE HAS LOWER COST
                 else {
 
+                    //MAKE NEW STATE LOWEST COST
                     min_cost = state;
 
-                    //Remove the existing state
+                    //REMOVE EXISTING STATE RETURN TRUE
                     remove(curr);
-
                     returnValue = true;
-
                 }
             }
+
+            //GO NEXT
             curr = curr.getNext();
         }
 
         return returnValue;
     }
 
-
+    //COMPARE IF STATEONE HAS THE SAME COORDINATES AT STATETWO
 	public boolean compareState(State stateOne, State stateTwo) {
 
 		if ((stateOne.getXCoord() == stateTwo.getXCoord()) && (stateOne.getYCoord() == stateTwo.getYCoord())) {
@@ -159,14 +148,26 @@ class Frontier {
 		return false;
 	}
 
-	public State getRoot() {
+	//GET THE PATH USING STATE'S PREVIOUS PATH FROM SPECIFIED GOAL TO SPECIFIED START STATE
+	public ArrayList<State> getPath(State start, State goal) {
 
-		return root;
+		ArrayList<State> path = new ArrayList<State>();
+		State _goal = goal;
+
+		//WHILE _GOAL IS NOT THE START
+		while (!compareState(_goal, start)) {
+		 	
+			//ADD TO THE PATH THEN SET GOAL TO GOAL'S PREVIOUS PATH
+			path.add(_goal);
+			_goal = _goal.getPP();
+		}
+
+		return path;
 	}
 
 	public void displayFrontier() {
 
-		System.out.println("	DISPLAYING FRONTIER...");
+		System.out.println("DISPLAYING FRONTIER...");
 		System.out.println("");
 
 		State curr = root;
@@ -194,5 +195,10 @@ class Frontier {
 		}
 
 		return size;
+	}
+
+	public State getRoot() {
+
+		return root;
 	}
 }

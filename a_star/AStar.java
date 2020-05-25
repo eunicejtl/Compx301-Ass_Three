@@ -1,3 +1,7 @@
+/* Name: Meecah Cahayon + Eunice Llobet
+ * Student ID: 1259825 + 1330233
+ */
+
 import java.util.*;
 import java.io.*;
 
@@ -6,17 +10,19 @@ import javax.swing.*;
 
 class AStar extends Canvas {
 
-	public static Frontier frontier;
-	public static Frontier visited;
-	public static State goalState = new State(0,0);
-	public static State startState = new State(0,0);
+	private static Frontier frontier;
+	private static Frontier visited;
+	private static Frontier allNoode;
+	private static State goalState = new State(0,0);
+	private static State startState = new State(0,0);
 
-	public static ArrayList<String> map = new ArrayList<String>();
+	private static ArrayList<String> map = new ArrayList<String>();
 
 	public static void main(String[] args) {
 
 		try {
 
+			//IF USER DID NOT INPUT 1 ARGUMENT
 			if(args.length != 1) {
 
 				System.err.println("Please enter a text file to read.");
@@ -25,29 +31,26 @@ class AStar extends Canvas {
 			//READ FILE
 			FileReader file = new FileReader(args[0]);
 			BufferedReader reader = new BufferedReader(file);
-
-			//DECLARE VARIABLES
 			String line = reader.readLine();
 
+			//DECLARE VARIABLES
 			ArrayList<State> possiblePaths = new ArrayList<State>();
-			StringBuilder new_line_sb;
-			String new_line_s;
+			ArrayList<State> shortestPath = new ArrayList<State>();
 			State lowestF;
 			int totalNumLines = 0;
 			
-			//FIND GOAL; AND START STATE
+			//FIND GOAL AND START STATE
 			while(line != null) {
 
-				System.out.println("Line: " + line + " Total Lines: "  + totalNumLines);
 				map.add(line);
 
-				//GET THE LINE AND X POS OF G
+				//GET THE Y AND X POS OF G
 				if(line.contains("G")) {
 
 					goalState = new State(line.indexOf("G"), totalNumLines);
 				}
 
-				//GET THE LINE AND X POS OF G
+				//GET THE Y AND X POS OF G
 				if(line.contains("S")) {
 
 					startState = new State(line.indexOf("S"), totalNumLines);
@@ -58,93 +61,75 @@ class AStar extends Canvas {
 				line = reader.readLine();
 			}
 
-			System.out.println("");
-			System.out.println("GOAL: ( "  + goalState.getXCoord() + ", " + goalState.getYCoord() + " )");
-			System.out.println("START: ( "  + startState.getXCoord() + ", " + startState.getYCoord() + " )");
-			System.out.println("");
-
-			//SET UP START STATE IN FRONTIER
+			//SET UP FRONTIERS
 			frontier = new Frontier(startState);
 			visited = new Frontier(new State(0,0));
+			allNoode = new Frontier(startState);
 			lowestF = frontier.getLowestF();
 
 			//WHILE PATH(SMALLEST FVALUE) IS NOT GOAL
             while(lowestF.getHeuristic() != 0) {
 
+                //FIND ALL POSSIBLE PATHS OF THE LOWESTF
                 possiblePaths = move(lowestF);
-
-                if(possiblePaths.size() != 0) {
-
-					System.out.println("	POSSIBLE PATHS FOR: ( "  + lowestF.getXCoord() + ", " + lowestF.getYCoord() + " )");
-					System.out.println("");
-
-					for(State s: possiblePaths) {
-
-						System.out.println("		POSSIBLE PATHS: ( "  + s.getXCoord() + ", " + s.getYCoord() + " )");
-					}
-				}
-				System.out.println("");
 
                 for (int i=0; i < possiblePaths.size() ; i++) {
 
-                    // if(frontier.getLowestCost(possiblePaths.get(i))) {
+                    //MULTIPLE PATHPRUNING: IF 2 DIFF PATH CONVERGE ON SAME STATE
+                    //DISCARD FROM THE FRONTIER THE ONE WITH LOWEST COST
+                    if(frontier.getLowestCost(possiblePaths.get(i))) {
 
-                    //     frontier.add(possiblePaths.get(i));
-                    // }
-
-                    if(frontier.findLowestF(possiblePaths.get(i))) {
-
+                        //IF THE STATE IS NOT YET VISITED
                         if (!isVisited(possiblePaths.get(i))) {
                         	
+                        	//ADD TO FRONTIER AND ALLNODE(FOR GETTING THE SHORTEST PATH)
                         	frontier.add(possiblePaths.get(i));
+                        	allNoode.add(possiblePaths.get(i));
                         }
                     }
                 }
 
-                System.out.println("	ADDING TO VISITED");
-                System.out.println("");
-
+                //ADDING CURR LOWEST F TO VISITED (SO WE DONT NEED TO ADD IT AGAIN LATER TO REVISIT - MAKES THE PROGRAM FASTER)
                 visited.add(new State(lowestF.getXCoord(), lowestF.getYCoord()));
-                visited.displayFrontier();
-                System.out.println("");
-
+                
+                //REMOVING THE LOWEST AND AND FINDING NEW LOWEST F
                 frontier.remove(lowestF);
                 lowestF = frontier.getLowestF();
 
-                frontier.displayFrontier();
-                System.out.println("");
                 System.out.println("SIZE: " + frontier.getSize());
                 System.out.println("");
-                System.out.println("	NEW LOWEST F: ( "  + lowestF.getXCoord() + ", " + lowestF.getYCoord() + " )");
-                System.out.println("");
 
-                new_line_sb = new StringBuilder(map.get(lowestF.getYCoord()));
-                new_line_sb.setCharAt(lowestF.getXCoord(), '.');
-                new_line_s = new_line_sb.toString();
-                map.set(lowestF.getYCoord(), new_line_s);
+                //REPLACING LOWESTF TO '.' FROM THE MAP
+                replaceCharAt(lowestF, '.');
             }
 
-            new_line_sb = new StringBuilder(map.get(goalState.getYCoord()));
-            new_line_sb.setCharAt(goalState.getXCoord(), 'G');
-            new_line_s = new_line_sb.toString();
-            map.set(goalState.getYCoord(), new_line_s);
+            System.out.println("GOAL FOUND!");
 
-            new_line_sb = new StringBuilder(map.get(startState.getYCoord()));
-            new_line_sb.setCharAt(startState.getXCoord(), 'S');
-            new_line_s = new_line_sb.toString();
-            map.set(startState.getYCoord(), new_line_s);
+            //GET THE SHORTEST PATH USING THE LOWESTF(GOAL)
+            shortestPath = allNoode.getPath(startState, lowestF);
 
-            frontier.displayFrontier();
+            //REPLACE EVERY PATH IN THE SHORTEST PATH TO 'P'
+            for(State currPath: shortestPath) {
+
+	            replaceCharAt(currPath, 'P');
+            }
+
+            //RESETTING GOAL STATE CAHR TO 'G' AND START STATE TO 'S' 
+            replaceCharAt(goalState, 'G');
+            replaceCharAt(startState, 'S');
 
             //CREATING GUI
             AStar gui = new AStar(); 
-			JFrame frame = new JFrame("Assignment 3");
+			JFrame frame = new JFrame("Assignment 3: 1259825 + 1330233");
+
+			// JScrollPane pane;
+			// JFrame frame = new JFrame("Assignment 3: 1259825 + 1330233");
+			// JScrollPane = new JScrollPane();
+			// frame.getContentPane().add(pane);
 
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 			frame.setSize(800,800);
 
-			//JButton button = new JButton("Press");
-			//frame.getContentPane().add(button);
 			frame.add(gui);
 			frame.setVisible(true);
 
@@ -159,60 +144,84 @@ class AStar extends Canvas {
 
 		int width = 10;
 		int height = 10;
-		int dSize = 20; //20
-		int fSize = 16; //16
+		int dSize = 20; //NORMALLY 20 BUT CAN CHANGE IF YOU HAVE BIG FILE
+		int fSize = 16; //NORMALLY 16 BUT CAN CHANGE IF YOU HAVE BIG FILE
 
-
+		//FOR EVERY LINE
 		for (int i = 0; i < map.size() ; i++) {
 
 			String line = map.get(i);
 
+			//FOR EVERY STING INDEX
 			for (int j = 0; j < line.length() ; j++) {
 
+				//IF ITS A BORDER
 				if (line.charAt(j) == '+' || line.charAt(j) == '-' || line.charAt(j) == '|') {
-					
-					g.setColor(new Color(128,76,88));
-					g.drawRect(width, height, dSize, dSize);
-					g.fillRect(width+2,height+2, fSize, fSize);
 
+					drawBlock(g, new Color(128,76,88), width, height, dSize, fSize, null);
 				}
+				//IF ITS AN OBSTACLE
 				else if (line.charAt(j) == 'X') {
 
-					g.setColor(new Color(179,128,139));
-					g.drawRect(width, height, dSize, dSize);
-					g.fillRect(width+2,height+2, fSize, fSize);
+					drawBlock(g, new Color(179,128,139), width, height, dSize, fSize, null);
 				}
+				//IF ITS THE START STATE
 				else if (line.charAt(j) == 'S') {
 					
-					g.setColor(new Color(142,175,188));
-					g.drawRect(width, height, dSize, dSize);
-					g.fillRect(width+2,height+2, fSize, fSize);
+					drawBlock(g, new Color(128,165,179), width, height, dSize, fSize, null);
 				}
+				//IF ITS THE GOAL STATE
 				else if (line.charAt(j) == 'G') {
 					
-					g.setColor(new Color(85,127,144));
-					g.drawRect(width, height, dSize, dSize);
-					g.fillRect(width+2,height+2, fSize, fSize);
+
+					drawBlock(g, new Color(86,128,144), width, height, dSize, fSize, null);
 				}
-				else if (line.charAt(j) == '.') {
-					
-					g.setColor(new Color(198,158,187));
-					g.drawRect(width, height, dSize, dSize);
-					g.fillRect(width+2,height+2, fSize, fSize);
+				//IF IT HAS BEEN THROUGH IT
+				// else if (line.charAt(j) == '.') {
+				// 
+				// 	drawBlock(g, new Color(176,208,185), width, height, dSize, fSize);
+				// }
+				//IF ITS THE SHORTEST PATH
+				else if (line.charAt(j) == 'P') {
+
+					drawBlock(g, new Color(128,179,143), width, height, dSize, fSize, null);
 				}
+				
+				//MOVE 20 RIGHT
 				width += 20;
 			}
 
+			//MOVE 20 DOWN AND RESET WIDTH TO ORIGINAL
 			height += 20;
 			width = 10;
 		}
+
+		g.setFont(new Font("AvantGrande", Font.PLAIN, 15));
+
+		//Map Border
+		height += 30;
+		drawBlock(g, new Color(128,76,88), width, height, dSize, fSize, "Map Border");
+		//Obstacle
+		height += 30;
+		drawBlock(g, new Color(179,128,139), width, height, dSize, fSize, "OBSTACLE");
+		//Start State
+		height += 30;
+		drawBlock(g, new Color(128,165,179), width, height, dSize, fSize, "Start");
+		//Goal State
+		height += 30;
+		drawBlock(g, new Color(86,128,144), width, height, dSize, fSize, "Goal");
+		//Shortest Path
+		height += 30;
+		drawBlock(g, new Color(128,179,143), width, height, dSize, fSize, "Shortest Path");
+		// //Visited Paths
+		// height += 30;
+		// drawBlock(g, new Color(176,208,185), width, height, dSize, fSize, "Visited Path");
 	}
 
+	//RETURNS ALL POSSIBLE PATH AT A GIVEN STATE
 	public static ArrayList<State> move(State currState) {
 		
 		ArrayList<State> possiblePaths = new ArrayList<State>();
-
-		State path;
 		int currXCoord = currState.getXCoord();
 		int currYCoord = currState.getYCoord();
 
@@ -225,10 +234,7 @@ class AStar extends Canvas {
 			if (frontier.compareState(currState, startState)) {
 
 				//CREATE A STATE AND ADD INTO POSSIBLEPATHS
-				path = new State(currXCoord, currYCoord - 1);
-				path.setfValue((currState.getCost()+1), calcHeuristic(path, goalState));
-				path.setPP(currState);
-				possiblePaths.add(path);
+				possiblePaths.add(createState(currState, currXCoord, currYCoord-1));
 
 			}
 			//IF NOT START STATE AND NOT PREVIOUS PATH
@@ -236,10 +242,8 @@ class AStar extends Canvas {
 				(currState.getPP().getYCoord() == (currYCoord - 1)))) {
 
 				//CREATE A STATE AND ADD INTO POSSIBLEPATHS
-				path = new State(currXCoord, currYCoord - 1);
-				path.setfValue((currState.getCost()+1), calcHeuristic(path, goalState));
-				path.setPP(currState);
-				possiblePaths.add(path);
+				possiblePaths.add(createState(currState, currXCoord, currYCoord-1));
+
 			}	
 		}
 
@@ -253,10 +257,7 @@ class AStar extends Canvas {
 			if (frontier.compareState(currState, startState)) {
 
 				//CREATE A STATE AND ADD INTO POSSIBLEPATHS
-				path = new State(currXCoord - 1 , currYCoord);
-				path.setfValue((currState.getCost()+1), calcHeuristic(path, goalState));
-				path.setPP(currState);
-				possiblePaths.add(path);
+				possiblePaths.add(createState(currState, currXCoord-1, currYCoord));
 
 			}
 			//IF NOT START STATE AND NOT PREVIOUS PATH
@@ -264,10 +265,8 @@ class AStar extends Canvas {
 				(currState.getPP().getYCoord() == (currYCoord)))) {
 
 				//CREATE A STATE AND ADD INTO POSSIBLEPATHS
-				path = new State(currXCoord - 1, currYCoord);
-				path.setfValue((currState.getCost()+1), calcHeuristic(path, goalState));
-				path.setPP(currState);
-				possiblePaths.add(path);
+				possiblePaths.add(createState(currState, currXCoord-1, currYCoord));
+
 			}
 		}
 
@@ -280,10 +279,7 @@ class AStar extends Canvas {
 			if (frontier.compareState(currState, startState)) {
 
 				//CREATE A STATE AND ADD INTO POSSIBLEPATHS
-				path = new State(currXCoord + 1, currYCoord);
-				path.setfValue((currState.getCost()+1), calcHeuristic(path, goalState));
-				path.setPP(currState);
-				possiblePaths.add(path);
+				possiblePaths.add(createState(currState, currXCoord+1, currYCoord));
 
 			}
 			//IF NOT START STATE AND NOT PREVIOUS PATH
@@ -291,15 +287,12 @@ class AStar extends Canvas {
 				(currState.getPP().getYCoord() == (currYCoord)))) {
 
 				//CREATE A STATE AND ADD INTO POSSIBLEPATHS
-				path = new State(currXCoord + 1, currYCoord);
-				path.setfValue((currState.getCost()+1), calcHeuristic(path, goalState));
-				path.setPP(currState);
-				possiblePaths.add(path);
+				possiblePaths.add(createState(currState, currXCoord+1, currYCoord));
+
 			}
 		}
 
 		//CHECK IF DOWN IS A POSSIBLE PATH
-		//CHECK IF SAME XCOORD IS POSSIBLE PATH (BUT BELOW)
 		if ((map.get(currYCoord+1).charAt(currXCoord)) != 'X' && 
 			(map.get(currYCoord+1).charAt(currXCoord)) != '|' && 
 			(map.get(currYCoord+1).charAt(currXCoord)) != '-') {
@@ -308,10 +301,7 @@ class AStar extends Canvas {
 			if (frontier.compareState(currState, startState)) {
 
 				//CREATE A STATE AND ADD INTO POSSIBLEPATHS
-				path = new State(currXCoord, currYCoord + 1);
-				path.setfValue((currState.getCost()+1), calcHeuristic(path, goalState));
-				path.setPP(currState);
-				possiblePaths.add(path);
+				possiblePaths.add(createState(currState, currXCoord, currYCoord+1));
 
 			}
 			//IF NOT START STATE AND NOT PREVIOUS PATH
@@ -319,10 +309,7 @@ class AStar extends Canvas {
 				(currState.getPP().getYCoord() == (currYCoord + 1)))) {
 
 				//CREATE A STATE AND ADD INTO POSSIBLEPATHS
-				path = new State(currXCoord, currYCoord + 1);
-				path.setfValue((currState.getCost()+1), calcHeuristic(path, goalState));
-				path.setPP(currState);
-				possiblePaths.add(path);
+				possiblePaths.add(createState(currState, currXCoord, currYCoord+1));
 
 			}
 		}
@@ -330,6 +317,7 @@ class AStar extends Canvas {
 		return possiblePaths;
 	}
 
+	//CHECK IF A GIVEN STATE HAS BEEN VISITED ALREADY
 	public static boolean isVisited(State state) {
 
 		State curr = visited.getRoot();
@@ -358,5 +346,40 @@ class AStar extends Canvas {
 		return distance;
 	}
 
+	//REPLACING CHAR USING THE STATES X AND Y COORDINATES
+	public static void replaceCharAt(State _state, char _char) {
 
+		StringBuilder new_line_sb_;
+		String new_line_s_;
+
+		//REPLACING CHAR AT STRING INDEX
+		new_line_sb_ = new StringBuilder(map.get(_state.getYCoord()));
+        new_line_sb_.setCharAt(_state.getXCoord(), _char);
+
+        //REPLACING TO THE UPDATED STRING
+        new_line_s_ = new_line_sb_.toString();
+        map.set(_state.getYCoord(), new_line_s_);
+	}
+
+	public static State createState(State state, int xCoord, int yCoord) {
+
+		//CREATE A STATE AND SET ITS COST, HEURISTIC VALUE, FVALUE, AND PREVIOUSPATH
+		State path = new State(xCoord, yCoord);
+		path.setfValue((state.getCost()+1), calcHeuristic(path, goalState));
+		path.setPP(state);
+
+		return path;
+	}
+
+	public static void drawBlock(Graphics g, Color color, int width, int height, int dSize, int fSize, String string) {
+
+		g.setColor(color);
+		g.drawRect(width, height, dSize, dSize);
+		g.fillRect(width+2,height+2, fSize, fSize);
+
+		if (string != null) {
+
+			g.drawString(string, width+30, height+15);
+		}
+	}
 }

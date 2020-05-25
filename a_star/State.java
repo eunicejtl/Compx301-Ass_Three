@@ -1,3 +1,7 @@
+/* Name: Meecah Cahayon + Eunice Llobet
+ * Student ID: 1259825 + 1330233
+ */
+
 import java.util.*;
 import java.io.*;
 
@@ -16,14 +20,13 @@ class State {
 	
 	/* CONSTRUCTOR */
 
-	//MAINLY USED FOR GOAL
 	public State(int xCoord, int yCoord) {
 
 		_xCoord = xCoord;
 		_yCoord = yCoord;
 	}
 
-	/* METHOD */
+	/* SETTERS AND GETTERS */
 
 	public int getXCoord() {
 
